@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#070b14" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Forex Budapest" />
+  <title>Forex Market Hours — Budapest</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #070b14;
+      color: #e8edf5;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      min-height: 100vh;
+      padding: 20px 14px 40px;
+    }
+    .header { text-align: center; margin-bottom: 24px; }
+    .subtitle { font-size: 10px; letter-spacing: 4px; color: #4d9eff; text-transform: uppercase; margin-bottom: 6px; opacity: .8; }
+    h1 {
+      font-size: 24px; font-weight: 800; margin-bottom: 6px;
+      background: linear-gradient(135deg, #e8edf5, #4d9eff);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .flag-line { font-size: 12px; color: #5a6a7a; margin-bottom: 12px; }
+    .clocks { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+    .clock-box {
+      background: rgba(77,158,255,0.1); border: 1px solid rgba(77,158,255,0.3);
+      border-radius: 8px; padding: 6px 16px; text-align: center;
+    }
+    .clock-label { font-size: 11px; color: #4d9eff; margin-bottom: 2px; }
+    .clock-time { font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: 1px; }
+    .clock-utc {
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px; padding: 6px 14px; font-size: 14px; color: #7a8ba0;
+      display: flex; align-items: center;
+    }
+    .timeline-box {
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px; padding: 16px 12px; margin-bottom: 18px;
+    }
+    .tl-title { font-size: 11px; color: #7a8ba0; margin-bottom: 12px; }
+    .tl-wrapper { position: relative; }
+    .tl-row { display: flex; align-items: center; gap: 8px; margin-bottom: 9px; }
+    .tl-label { width: 68px; font-size: 12px; flex-shrink: 0; }
+    .tl-track { flex: 1; height: 11px; background: rgba(255,255,255,0.06); border-radius: 6px; position: relative; overflow: hidden; }
+    .tl-hours { display: flex; justify-content: space-between; font-size: 10px; color: #4a5568; margin-top: 6px; padding-left: 76px; }
+    .now-line { position: absolute; top: 0; width: 2px; background: rgba(255,255,255,0.7); pointer-events: none; border-radius: 1px; z-index: 5; }
+    .now-dot { position: absolute; bottom: -4px; left: 50%; transform: translateX(-50%); width: 8px; height: 8px; border-radius: 50%; background: #fff; }
+    .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .card { border-radius: 14px; padding: 14px 12px; transition: box-shadow .3s, border .3s; }
+    .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+    .badge { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 20px; letter-spacing: 1px; }
+    .card-flag { font-size: 20px; }
+    .card-name { font-size: 17px; font-weight: 800; margin-bottom: 2px; }
+    .card-session { font-size: 11px; color: #7a8ba0; margin-bottom: 9px; }
+    .card-times { background: rgba(0,0,0,0.25); border-radius: 8px; padding: 8px 10px; font-size: 12px; color: #a0aec0; }
+    .time-row { display: flex; justify-content: space-between; margin-bottom: 4px; align-items: center; }
+    .time-label { font-size: 11px; color: #666; }
+    .time-utc { border-top: 1px solid rgba(255,255,255,0.06); padding-top: 5px; margin-top: 4px; font-size: 10px; color: #5a6a7a; }
+    .pairs { margin-top: 7px; display: flex; gap: 4px; flex-wrap: wrap; }
+    .pair-tag { font-size: 10px; padding: 2px 6px; border-radius: 4px; }
+    .note {
+      margin-top: 14px; background: rgba(255,209,102,0.06);
+      border: 1px solid rgba(255,209,102,0.2);
+      border-radius: 12px; padding: 12px 14px;
+      font-size: 12px; color: #c8a020; line-height: 1.8;
+    }
+    .note strong { color: #ffd166; }
+    .footer { text-align: center; margin-top: 14px; font-size: 10px; color: #2d3748; }
+    #install-btn {
+      display: none; position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+      background: #4d9eff; color: #070b14; font-weight: 700; font-size: 13px;
+      border: none; border-radius: 30px; padding: 10px 24px; cursor: pointer;
+      box-shadow: 0 4px 20px rgba(77,158,255,0.5); z-index: 999; white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="subtitle">Live Forex Market Sessions</div>
+  <h1>Forex Market Hours</h1>
+  <div class="flag-line">🇭🇺 Budapest Time — CEST (UTC+2)</div>
+  <div class="clocks">
+    <div class="clock-box">
+      <div class="clock-label">Budapest</div>
+      <div class="clock-time" id="clock-local">--:--:--</div>
+    </div>
+    <div class="clock-utc" id="clock-utc">--:-- UTC</div>
+  </div>
+</div>
+
+<div class="timeline-box">
+  <div class="tl-title">UTC Timeline — white line = now</div>
+  <div class="tl-wrapper">
+    <div id="tl-rows"></div>
+    <div class="now-line" id="now-line"><div class="now-dot"></div></div>
+    <div class="tl-hours">
+      <span>00</span><span>04</span><span>08</span><span>12</span><span>16</span><span>20</span><span>24</span>
+    </div>
+  </div>
+</div>
+
+<div class="cards" id="cards"></div>
+
+<div class="note">
+  ⚡ <strong>Best time to trade:</strong> London–New York overlap — <strong>15:00 to 19:00 Budapest time</strong>. Highest liquidity and volatility of the day.
+</div>
+
+<div class="footer">🇭🇺 Hungary • CEST (UTC+2) • Summer Time (Apr–Oct)</div>
+
+<button id="install-btn">📲 Install App</button>
+
+<script>
+  const OFFSET = 2 * 60; // CEST = UTC+2
+
+  const sessions = [
+    { name: "Sydney",   flag: "🇦🇺", openUTC: 21, closeUTC: 6,  color: "#00d4aa", pairs: ["AUD/USD","NZD/USD"] },
+    { name: "Tokyo",    flag: "🇯🇵", openUTC: 0,  closeUTC: 9,  color: "#ff6b6b", pairs: ["USD/JPY","AUD/JPY"] },
+    { name: "London",   flag: "🇬🇧", openUTC: 8,  closeUTC: 17, color: "#4d9eff", pairs: ["EUR/USD","GBP/USD"] },
+    { name: "New York", flag: "🇺🇸", openUTC: 13, closeUTC: 22, color: "#ffd166", pairs: ["USD/CAD","USD/CHF"] },
+  ];
+
+  function isOpen(o, c, h) {
+    return o < c ? (h >= o && h < c) : (h >= o || h < c);
+  }
+  function toLocal(utcH) {
+    const t = utcH * 60 + OFFSET;
+    return String(Math.floor(t/60)%24).padStart(2,'0') + ':' + String(t%60).padStart(2,'0');
+  }
+  function rgb(hex) { return [1,3,5].map(i=>parseInt(hex.slice(i,i+2),16)).join(','); }
+  function a(hex, op) { return `rgba(${rgb(hex)},${op})`; }
+
+  // Build timeline rows
+  const tlRows = document.getElementById('tl-rows');
+  sessions.forEach(s => {
+    const row = document.createElement('div');
+    row.className = 'tl-row';
+    row.innerHTML = `
+      <div class="tl-label" id="lbl-${s.name}" style="color:#7a8ba0">${s.flag} ${s.name}</div>
+      <div class="tl-track" id="track-${s.name}"></div>
+    `;
+    tlRows.appendChild(row);
+  });
+
+  // Build cards
+  const cardsEl = document.getElementById('cards');
+  sessions.forEach(s => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.id = `card-${s.name}`;
+    card.style.background = 'rgba(255,255,255,0.03)';
+    card.style.border = '1px solid rgba(255,255,255,0.07)';
+    card.innerHTML = `
+      <div class="card-top">
+        <span class="badge" id="badge-${s.name}" style="background:rgba(255,255,255,0.1);color:#7a8ba0">● Closed</span>
+        <span class="card-flag">${s.flag}</span>
+      </div>
+      <div class="card-name" id="cname-${s.name}" style="color:#e8edf5">${s.name}</div>
+      <div class="card-session">${s.name} Session</div>
+      <div class="card-times">
+        <div class="time-row">
+          <span class="time-label">Open (Budapest)</span>
+          <span style="color:#00d4aa;font-weight:700">${toLocal(s.openUTC)}</span>
+        </div>
+        <div class="time-row">
+          <span class="time-label">Close (Budapest)</span>
+          <span style="color:#ff6b6b;font-weight:700">${toLocal(s.closeUTC)}</span>
+        </div>
+        <div class="time-utc">UTC ${String(s.openUTC).padStart(2,'0')}:00 – ${String(s.closeUTC).padStart(2,'0')}:00</div>
+      </div>
+      <div class="pairs">
+        ${s.pairs.map(p=>`<span class="pair-tag" style="background:${a(s.color,.15)};color:${s.color};border:1px solid ${a(s.color,.25)}">${p}</span>`).join('')}
+      </div>
+    `;
+    cardsEl.appendChild(card);
+  });
+
+  function update() {
+    const now = new Date();
+    const utcH = now.getUTCHours();
+    const utcM = now.getUTCMinutes();
+    const utcS = now.getUTCSeconds();
+    const nowMins = utcH * 60 + utcM;
+
+    // Clocks
+    const lt = utcH * 60 + utcM + OFFSET;
+    document.getElementById('clock-local').textContent =
+      String(Math.floor(lt/60)%24).padStart(2,'0') + ':' +
+      String(lt%60).padStart(2,'0') + ':' +
+      String(utcS).padStart(2,'0');
+    document.getElementById('clock-utc').textContent =
+      String(utcH).padStart(2,'0') + ':' + String(utcM).padStart(2,'0') + ' UTC';
+
+    // Now line position
+    const rowH = 20, totalH = sessions.length * rowH + 10;
+    const nl = document.getElementById('now-line');
+    const pct = (nowMins / 1440) * 100;
+    nl.style.left = `calc(76px + ${pct}% * (100% - 76px) / 100)`;
+    nl.style.height = totalH + 'px';
+
+    sessions.forEach(s => {
+      const open = isOpen(s.openUTC, s.closeUTC, utcH);
+      const sp = (s.openUTC/24)*100, ep = (s.closeUTC/24)*100;
+      const bg = open ? s.color : a(s.color, .4);
+      const shadow = open ? `box-shadow:0 0 8px ${a(s.color,.6)};` : '';
+
+      // Timeline bar
+      const track = document.getElementById(`track-${s.name}`);
+      if (s.openUTC < s.closeUTC) {
+        track.innerHTML = `<div style="position:absolute;left:${sp}%;width:${ep-sp}%;height:100%;background:${bg};border-radius:6px;${shadow}"></div>`;
+      } else {
+        track.innerHTML = `
+          <div style="position:absolute;left:0;width:${ep}%;height:100%;background:${bg};border-radius:6px 0 0 6px;${shadow}"></div>
+          <div style="position:absolute;left:${sp}%;width:${100-sp}%;height:100%;background:${bg};border-radius:0 6px 6px 0;${shadow}"></div>`;
+      }
+
+      // Label color
+      const lbl = document.getElementById(`lbl-${s.name}`);
+      lbl.style.color = open ? s.color : '#7a8ba0';
+      lbl.style.fontWeight = open ? '700' : '400';
+
+      // Card
+      const card = document.getElementById(`card-${s.name}`);
+      card.style.background = open
+        ? `linear-gradient(135deg,${a(s.color,.12)},${a(s.color,.04)})`
+        : 'rgba(255,255,255,0.03)';
+      card.style.border = `1px solid ${open ? a(s.color,.3) : 'rgba(255,255,255,0.07)'}`;
+      card.style.boxShadow = open ? `0 0 18px ${a(s.color,.3)}` : 'none';
+
+      const badge = document.getElementById(`badge-${s.name}`);
+      badge.textContent = open ? '● Open' : '● Closed';
+      badge.style.background = open ? s.color : 'rgba(255,255,255,0.1)';
+      badge.style.color = open ? '#0a0f1a' : '#7a8ba0';
+
+      document.getElementById(`cname-${s.name}`).style.color = open ? s.color : '#e8edf5';
+    });
+  }
+
+  update();
+  setInterval(update, 1000);
+
+  // PWA install prompt
+  let deferredPrompt;
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredPrompt = e;
+    document.getElementById('install-btn').style.display = 'block';
+  });
+  document.getElementById('install-btn').addEventListener('click', () => {
+    if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; }
+    document.getElementById('install-btn').style.display = 'none';
+  });
+</script>
+</body>
+</html>
